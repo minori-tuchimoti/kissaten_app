@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ area }}の喫茶店一覧</title>
+</head>
+<body>
+    <h1>{{ area }}の喫茶店</h1>
+
+    <ul>
+        {% for shop in shops %}
+            <li>{{ shop }}</li>  <!-- ※あとでここをリンクにします -->
+        {% else %}
+            <li>喫茶店が見つかりませんでした</li>
+        {% endfor %}
+    </ul>
+
+    <a href="/">← 戻る</a>
+</body>
+</html>

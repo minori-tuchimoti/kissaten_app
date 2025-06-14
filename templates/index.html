@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">  <!-- 文字コードをUTF-8に設定（日本語を正しく表示するため） -->
+    <title>喫茶店エリア選択</title>  <!-- ブラウザのタブに表示されるタイトル -->
+</head>
+<body>
+    <h1>エリアを選んでください</h1>  <!-- ページの見出し -->
+
+    <ul>  <!-- 箇条書きリストの開始 -->
+        {% for area in areas %}  <!-- Flaskから渡された「areas」のリストを繰り返す -->
+            <li><a href="/area/{{ area }}">{{ area }}</a></li>
+            <!-- 各エリア名をリンク付きで表示（例: /area/東京都） -->
+        {% endfor %}  <!-- forループの終了 -->
+    </ul>  <!-- 箇条書きリストの終了 -->
+</body>
+</html>
