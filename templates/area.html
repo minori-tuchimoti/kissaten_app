@@ -9,9 +9,7 @@
 
     <ul>
         {% for shop in shops %}
-            <li>{{ shop }}</li>  <!-- ※あとでここをリンクにします -->
-        {% else %}
-            <li>喫茶店が見つかりませんでした</li>
+            <li><a href="/shop/{{ shop }}">{{ shop }}</a></li>
         {% endfor %}
     </ul>
 

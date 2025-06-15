@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ shop_name }}</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            background-color: #f8f5f2;
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        h1 {
+            color: #5c4033;
+            font-size: 2em;
+            border-bottom: 2px solid #d2b48c;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-box {
+            background-color: #fff;
+            border: 1px solid #e0dcd5;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .info-box p {
+            margin: 8px 0;
+        }
+
+        #map {
+            height: 300px;
+            width: 80%;
+            border: 2px solid #d2b48c;
+            border-radius: 10px;
+            margin: 20px auto;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 30px;
+            text-decoration: none;
+            color: #5c4033;
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: #a0522d;
+        }
+    </style>
+</head>
+<body>
+    <div class="info-box">
+        <h1>{{ shop_name }}</h1>
+        <p style="white-space: pre-line;">{{ info.description }}</p>
+        <p><strong>住所：</strong>{{ info.address }}</p>
+        <p><strong>電話番号：</strong>{{ info.phone }}</p>
+        <p><strong>営業時間：</strong>{{ info.hours }}</p>
+        <p><strong>定休日：</strong>{{ info.closed }}</p>
+        <p><strong>席数：</strong>{{ info.seats }}</p>
+        <p><strong>カード利用：</strong>{{ info.card }}</p>
+        <p><strong>喫煙：</strong>{{ info.smoking }}</p>
+        <p><strong>最寄り駅：</strong>{{ info.access }}</p>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([{{ info.lat }}, {{ info.lng }}], 16);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        L.marker([{{ info.lat }}, {{ info.lng }}]).addTo(map)
+            .bindPopup("{{ shop_name }}")
+            .openPopup();
+    </script>
+
+    <a href="/area/{{ area }}">← {{ area }} に戻る</a>
+</body>
+</html>
