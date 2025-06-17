@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
         body {
+            /* ページ全体 */
             font-family: 'Helvetica', 'Arial', sans-serif;
             background-color: #f8f5f2;
             color: #333;
@@ -14,6 +15,7 @@
         }
 
         h1 {
+            /* タイトル */
             color: #5c4033;
             font-size: 2em;
             border-bottom: 2px solid #d2b48c;
@@ -22,6 +24,7 @@
         }
 
         .info-box {
+            /* 店舗詳細部分を囲むBOX */
             background-color: #fff;
             border: 1px solid #e0dcd5;
             border-radius: 10px;
@@ -32,10 +35,12 @@
         }
 
         .info-box p {
+            /* 店舗詳細内の段落 */
             margin: 8px 0;
         }
 
         #map {
+            /* 地図 */
             height: 300px;
             width: 80%;
             border: 2px solid #d2b48c;
@@ -44,6 +49,7 @@
         }
 
         a {
+            /* リンクの見た目 */
             display: inline-block;
             margin-top: 30px;
             text-decoration: none;
@@ -52,12 +58,107 @@
         }
 
         a:hover {
+            /* マウスを乗せたときのリンクの色 */
             color: #a0522d;
         }
+
+        .photo-gallery {
+            /* 画像ギャラリーのレイアウト */
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px auto;
+            flex-wrap: wrap;
+        }
+
+        .photo-gallery img {
+            /* 各画像の見た目 */
+            width: 200px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .modal {
+            /* モーダルの見た目 */
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .modal-content {
+            /* モーダルで表示する画像の見た目 */
+            display: block;
+            margin: 5% auto;
+            max-width: 90%;
+            max-height: 80%;
+            border-radius: 10px;
+        }
+
+        .modal-close {
+            /* モーダルを閉じる×ボタン */
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 101;
+        }
+
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+            user-select: none;
+            z-index: 101;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 50%;
+        }
+
+        .modal-nav.prev {
+            left: 20px;
+        }
+
+        .modal-nav.next {
+            right: 20px;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 101;
+        }
+
+        .zoom-controls button {
+            font-size: 20px;
+            padding: 8px 12px;
+            cursor: pointer;
+            border: none;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+
+
     </style>
 </head>
 <body>
-    <div class="info-box">
+    <div class="info-box">     <!-- 店舗の詳細情報 -->
         <h1>{{ shop_name }}</h1>
         <p style="white-space: pre-line;">{{ info.description }}</p>
         <p><strong>住所：</strong>{{ info.address }}</p>
@@ -70,9 +171,29 @@
         <p><strong>最寄り駅：</strong>{{ info.access }}</p>
     </div>
 
-    <div id="map"></div>
+    <div class="photo-gallery">     <!-- 画像表示 -->
+        {% for image in info.images %}
+          <img src="{{ url_for('static', filename='images/' + image) }}"
+               alt="店内写真{{ loop.index }}"
+               onclick="showImage(this.src)">
+        {% endfor %}
+    </div>
+
+    <div id="map"></div>   <!-- 地図表示 -->
+
+    <div id="imgModal" class="modal">      <!-- 画像拡大機能、ナビ、ズーム -->
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <span class="modal-nav prev" onclick="showPrevImage()">&#10094;</span>
+        <img class="modal-content" id="modalImage">
+        <span class="modal-nav next" onclick="showNextImage()">&#10095;</span>
+        <div class="zoom-controls">    <!-- 画像拡大縮小用ボタン -->
+          <button onclick="zoomImage(1.2)">+</button>
+          <button onclick="zoomImage(0.8)">-</button>
+        </div>
+    </div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
     <script>
         var map = L.map('map').setView([{{ info.lat }}, {{ info.lng }}], 16);
 
@@ -85,6 +206,64 @@
             .openPopup();
     </script>
 
-    <a href="/area/{{ area }}">← {{ area }} に戻る</a>
+    <script>
+        function showImage(src) {
+          document.getElementById("modalImage").src = src;
+          document.getElementById("imgModal").style.display = "block";
+        }
+  
+        function closeModal() {
+          document.getElementById("imgModal").style.display = "none";
+        }
+    </script>
+  
+    <script>     
+      let currentImageIndex = 0;
+      let imageList = [];
+      let zoomLevel = 1;
+  
+      function showImage(src) {
+        const imgs = document.querySelectorAll(".photo-gallery img");
+        imageList = Array.from(imgs).map(img => img.src);
+        currentImageIndex = imageList.indexOf(src);
+  
+        const modalImage = document.getElementById("modalImage");
+        modalImage.src = src;
+        zoomLevel = 1;
+        modalImage.style.transform = "scale(1)";
+  
+        document.getElementById("imgModal").style.display = "flex";
+      }
+  
+      function closeModal() {
+        document.getElementById("imgModal").style.display = "none";
+      }
+  
+      function showPrevImage() {
+        currentImageIndex = (currentImageIndex - 1 + imageList.length) % imageList.length;
+        updateModalImage();
+      }
+  
+      function showNextImage() {
+        currentImageIndex = (currentImageIndex + 1) % imageList.length;
+        updateModalImage();
+      }
+  
+      function updateModalImage() {
+        const modalImage = document.getElementById("modalImage");
+        modalImage.src = imageList[currentImageIndex];
+        zoomLevel = 1;
+       modalImage.style.transform = "scale(1)";
+      }
+  
+      function zoomImage(factor) {
+        zoomLevel *= factor;
+        const modalImage = document.getElementById("modalImage");
+        modalImage.style.transform = `scale(${zoomLevel})`;
+      }
+    </script>
+  
+
+    <a href="/area/{{ area }}">← {{ area }} 喫茶店一覧に戻る</a>
 </body>
 </html>
