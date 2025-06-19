@@ -158,6 +158,19 @@
     </style>
 </head>
 <body>
+
+    {% if current_user.is_authenticated %}
+  <form id="favoriteForm" method="POST" action="{{ url_for('toggle_favorite', shop_name=shop_name) }}">
+      <button type="submit">
+        {% if shop_name in favorite_names %}
+            ⭐ お気に入り解除
+        {% else %}
+            ☆ お気に入り追加
+        {% endif %}
+      </button>
+  </form>
+{% endif %}
+
     <div class="info-box">     <!-- 店舗の詳細情報 -->
         <h1>{{ shop_name }}</h1>
         <p style="white-space: pre-line;">{{ info.description }}</p>
