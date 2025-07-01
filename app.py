@@ -2,6 +2,7 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from models import db, User, Shop
+from flask import redirect, url_for
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key' 
@@ -91,19 +92,23 @@ def index():
 @app.route('/favorite/<shop_name>', methods=['POST'])
 @login_required
 def toggle_favorite(shop_name):
-    shop = Shop.query.get(shop_name)
+    user = current_user
+    shop = Shop.query.filter_by(name=shop_name).first()  # ここは get(shop_name) だとID検索になるので修正
     if not shop:
         shop = Shop(name=shop_name)
         db.session.add(shop)
+        db.session.commit()  # 新規追加は即コミットしておく
 
     if shop in current_user.favorites:
         current_user.favorites.remove(shop)
         db.session.commit()
-        return jsonify({'status': 'removed'})
+        status = 'removed'
     else:
         current_user.favorites.append(shop)
         db.session.commit()
-        return jsonify({'status': 'added'})
+        status = 'added'
+
+    return jsonify({'status': status})
 
 
 @app.route('/area/<area_name>')

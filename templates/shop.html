@@ -159,17 +159,18 @@
 </head>
 <body>
 
-    {% if current_user.is_authenticated %}
-  <form id="favoriteForm" method="POST" action="{{ url_for('toggle_favorite', shop_name=shop_name) }}">
-      <button type="submit">
+  {% if current_user.is_authenticated %}
+    <form id="favoriteForm" method="POST" action="{{ url_for('toggle_favorite', shop_name=shop_name) }}">
+      <button type="submit" id="favoriteBtn" data-shop-name="{{ shop_name }}">
         {% if shop_name in favorite_names %}
             ⭐ お気に入り解除
         {% else %}
             ☆ お気に入り追加
         {% endif %}
       </button>
-  </form>
-{% endif %}
+    </form>
+  {% endif %}
+
 
     <div class="info-box">     <!-- 店舗の詳細情報 -->
         <h1>{{ shop_name }}</h1>
@@ -275,6 +276,57 @@
         modalImage.style.transform = `scale(${zoomLevel})`;
       }
     </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("favoriteForm");
+      const btn = document.getElementById("favoriteBtn");
+    
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();  // フォームの通常送信を止める
+    
+        const shopName = btn.getAttribute("data-shop-name");
+        const url = `/favorite/${shopName}`;
+    
+        fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie("csrf_token")  // CSRFトークンがあるなら送る
+          },
+          body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === "added") {
+            btn.textContent = "⭐ お気に入り解除";
+          } else if (data.status === "removed") {
+            btn.textContent = "☆ お気に入り追加";
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error);
+        });
+      });
+    
+      // Flask-WTFなどでCSRF対策しているならトークンをCookieから取得
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+    });
+    </script>
+    
   
 
     <a href="/area/{{ area }}">← {{ area }} 喫茶店一覧に戻る</a>
