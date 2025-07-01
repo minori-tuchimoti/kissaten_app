@@ -1,0 +1,102 @@
+body {
+  font-family: 'Merriweather', serif;
+  background-image: url("/static/images/paper1.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 15px;
+  background-color: #f8f5f2;
+  font-family: 'Merriweather', serif;
+  color: #4b3b2a;
+}
+
+h1 {
+  font-size: 3rem;
+  color: #6b4c3b;
+  margin-bottom: 0.5rem;
+}
+
+p.lead {
+  color: #8a6f5a;
+  font-size: 1.2rem;
+}
+
+a {
+  color: #6b4c3b;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #a0522d;
+}
+
+.btn-primary {
+  background-color: #a0522d;
+  border-color: #a0522d;
+}
+
+.btn-outline-primary {
+  color: #a0522d;
+  border-color: #a0522d;
+}
+
+.btn-outline-primary:hover {
+  background-color: #a0522d;
+  color: white;
+}
+
+.list-group-item {
+  background-color: #fffaf5;
+  border: 1px solid #e0dcd5;
+  color: #4b3b2a;
+  font-size: 1.05rem;
+}
+
+.list-group-item a {
+  color: #4b3b2a;
+}
+
+.list-group-item:hover {
+  background-color: #f1e9e1;
+}
+
+.card {
+  max-width: 700px;
+  width: 100%;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.card-header h1 {
+  font-weight: 700;
+  color: #6b4c3b;
+  font-size: 3rem;
+}
+.subtitle {
+  font-style: italic;
+  color: #a1876f;
+  font-size: 1.2rem;
+}
+.area-link {
+  background-color: #f3e9dc;
+  border-radius: 10px;
+  color: #6b4c3b;
+  font-weight: 600;
+  padding: 10px 15px;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 2px 2px 5px rgba(107,76,59,0.2);
+  transition: all 0.25s ease;
+  user-select: none;
+}
+.area-link:hover {
+  background-color: #d19049;
+  color: white;
+  box-shadow: 2px 5px 12px rgba(209,144,73,0.7);
+  transform: translateY(-3px);
+  text-decoration: none;
+}

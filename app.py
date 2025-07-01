@@ -135,7 +135,7 @@ def shop_detail(shop_name):
             "card": "不可",
             "smoking": "禁煙",
             "access": "JR西荻窪駅より徒歩約5分",
-            "images": ["monozuki1.jpg", "monozuki2.jpg", "monozuki3.jpg"],
+            "images": ["monozuki.jpg", "monozuki2.jpg", "monozuki3.jpg"],
             "lat": 35.705426,
             "lng": 139.596931,
             "area": "東京都"
